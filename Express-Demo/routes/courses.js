@@ -1,24 +1,20 @@
-const Joi = require('joi');
 const express = require('express');
+const router = express.Router();
 
-const app = express();
-
-app.use(express.json());
 
 let courses = [
     {id : 1, name : 'course1'},
     {id : 2, name : 'course2'},
     {id : 3, name : 'course3'}
-]
-
+];
 
 // GET
-app.get('/api/courses', (req,res) => {
+router.get('/', (req,res) => {
     res.send(courses);
 });
 
 // POST
-app.post('/api/courses', (req, res) => {
+router.post('/', (req, res) => {
     const {error} = validateCourse(req.body);
     if (error)  return res.status(400).send(error.details[0].message);
 
@@ -34,7 +30,7 @@ app.post('/api/courses', (req, res) => {
 
 
 // PUT 
-app.put('/api/courses/:id', (req, res) => {
+router.put('/:id', (req, res) => {
 
     const course =  courses.find( crse => crse.id === parseInt(req.params.id));
     if (!course) return res.status(404).send('The course with the given ID was not found!');
@@ -54,7 +50,7 @@ function validateCourse(course){
 }
 
 // DELETE
-app.delete('/api/courses/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const course =  courses.find( crse => crse.id === parseInt(req.params.id));
     if (!course) return res.status(404).send('The course with the given ID was not found!');
     
@@ -66,14 +62,11 @@ app.delete('/api/courses/:id', (req, res) => {
 });
 
 // GET by id
-app.get('/api/courses/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     const course =  courses.find( crse => crse.id === parseInt(req.params.id));
     if (!course) return res.status(404).send('The course with the given ID was not found!');
     res.send(course);
 
  });
 
-const port = process.env.PORT || 3000;
-app.listen(port, ()=> console.log(`Listening on port ${port}`));
-
-
+ module.exports = router;
