@@ -49,7 +49,7 @@ async function getCourses(){
     .or([{price : {$gt : 15}}, {name : /.*by.*/i}])   //published courses that are 15dollars or more or has name by 
     .limit(10)
     .sort({ name : 1})
-    // .count()
+    .count()                         
     .select({ name: 1, tags : 1});
     console.log(courses);
 }
