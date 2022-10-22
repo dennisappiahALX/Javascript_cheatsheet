@@ -9,7 +9,21 @@ mongoose.connect('mongodb://localhost/playground')
 const courseSchema = new  mongoose.Schema({
     name : String,
     author : String,
-    tags : [ String ],
+    categories : {
+        type : String,
+        required : true,
+        enum : ['web', 'mobile', 'network'],
+        lowercase : true
+    },
+    tags : {
+        type : Array,    //A course should have at least one tag
+        validate : {
+            validator : function(v) {
+                return v.length > 0;
+            },
+            message : 'A course should have at least one tag.'
+        }
+    },
     date : { type: Date, default: Date.now},
     ispublished : Boolean
 });
