@@ -5,7 +5,7 @@ mongoose.connect('mongodb://localhost/playground')
     .catch(err => console.error('Could not connect', err));
 
 
-const Author = mongoose.model('Author', new mongoose.Schema({
+const Author = mongoose.model('Author', new mongoose.Schema({   //author is a subset or part of the Course object
     name : { 
         type : String, 
         required : true,
