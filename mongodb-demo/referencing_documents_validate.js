@@ -39,7 +39,7 @@ const Course = mongoose.model('Course', new mongoose.Schema({
                     setTimeout(() => {
                         const result = v && v.length > 0;
                         resolve(result);
-                    }, 4000);
+                    }, 2000);
                 })      
             },
             message : 'A course should have at least one tag'
@@ -114,12 +114,13 @@ async function createCourse(name, author, tags, categories, date, isPublished, p
 async function listCourses() {
     const courses = await Course
     .find()
-    .select('name');
+    .populate('author', 'name -_id')
+    .select('name author');
 
     console.log(courses);
 }
 
-
+// listCourses();
 // createAuthor('Dennis', 'Software Engineer', 'https://');
 
-createCourse('Node JS', '6353bd886265abf284f8cb3b', ['Node JS', 'Backend'], 'web','2022-10-22', false, 17.68);
+createCourse('Node JS', '63544461079388b382775cf8', ['Node JS', 'Backend'], 'web','2022-10-22', false, 17.68);
