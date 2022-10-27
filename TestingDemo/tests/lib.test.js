@@ -90,7 +90,7 @@ describe('registerUser', () => {
     })
 })
 
-
+//apply Discount
 describe('applyDiscount', () => {
     test('should apply 10% discount if customer has nore than 10points', () => {
         db.getCustomerSync = function(customerId) {
@@ -103,3 +103,4 @@ describe('applyDiscount', () => {
         expect(order.totalPrice).toBe(9);
     })
 });
+
