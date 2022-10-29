@@ -46,3 +46,5 @@ module.exports.applyDiscount = function(order) {
     if (customer.point > 0)
         order.totalprice *=0.9
 }
+
+//Mock functions

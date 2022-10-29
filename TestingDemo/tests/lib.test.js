@@ -93,14 +93,25 @@ describe('registerUser', () => {
 //apply Discount
 describe('applyDiscount', () => {
     test('should apply 10% discount if customer has nore than 10points', () => {
-        db.getCustomerSync = function(customerId) {
-            console.log('Fake reading customer...');
-            return { id: customerId, points: 20}; 
-        }
-        let order = { customerId: 1, totalPrice: 9}
+    db.getCustomerSync = jest.fn().mockReturnValue({id: customerId, points: 20})
+        
+        // db.getCustomerSync = function(customerId) {
+        //     console.log('Fake reading customer...');
+        //     return { id: customerId, points: 20}; 
+        // }
+        let order = { id: 1, totalPrice: 9}
         lib.applyDiscount(order);
 
         expect(order.totalPrice).toBe(9);
     })
 });
 
+
+
+
+
+//Mock functions with Jest
+       
+        // mockFunction.mockReturn(1)
+        // mockFunction.mockResolve(1)
+        // mockFunction.mockRejectedValue()
