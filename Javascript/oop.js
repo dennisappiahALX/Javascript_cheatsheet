@@ -1,202 +1,113 @@
-//Abstraction - Hide the details, show the essentials - Using variables to declare 
-//private properties and methods
+const _radius = new WeakMap()
+const _move = new WeakMap()
 
-function Circle(radius) {                  //closure is what objects are accessible by a method publicly? 
-    this.radius = radius;
-
-    let defaultlocation = {x:0, y:0};        //private object
-
-    let computeOptimization = function(factor){       //private method
-        console.log('yes');
-    }
-
-    this.draw = function() {
-
-        let x, y;  //closure objects
-
-        computeOptimization(0.1);
-       
-        console.log('draw');
-    };
-}
-
-const circle = new Circle(5);
-circle.draw();
-
-
-
-//Using Getters & Setters 
-
-function Circle(radius) {                  //closure is what objects are accessible by a method publicly? 
-    this.radius = radius;
-
-    let defaultLocation = {x: 0 , y: 0};        //private object
-
-    this.getDefaultLocation = function() {
-        return defaultLocation;                //Getter - want to access private object as a property not a method
-    };
-
-    this.draw = function() {
-        console.log('draw');
-    };
-
-    Object.defineProperty(this, 'defaultLocation', {
-        get: function() {
-            return defaultLocation;
-        },
-        set: function(value) { 
-            //we can perform validation on the value parameter
-            
-            if (!value.x || !value.y)
-            throw new Error('Invalid Location!');
-    
-            defaultLocation = value;
-        }
-    });
-}
-
-let circle_1 = new Circle(10);
-circle.defaultLocation = 1; //invalid location error
-circle.draw();
-
-//Prototypes & Instances
-
-function Circle(radius) {   
-    //instance members
-    this.radius = radius;
-
-    this.move = function(){
+class Circle{
+    constructor(radius){
+      _radius.set(this, radius);   //setting private methods and property (Abstraction)
+                                   
+      _move.set(this, () => {
         console.log('move');
+      })
+    }
+
+     //instance method
+    draw() {
+        console.log('draw');
+    }
+
+    get radius() {
+        return _radius.get(this);   //defining getter method to behave as a property
+    }
+
+    set radius(value) {           //defining a setter function to change value of radius
+        if (value <= 0) throw new Error('Inavlid radius');   
+
+        _radius.set(this, value);
+    }
+
+    //static method
+    static parse(str) {         //a method not tied to any object
+        const radius = JSON.parse(str).radius;
+        return new Circle(radius);
     }
 }
 
-//prototype members
-Circle.prototype.draw = function(){
-    console.log('draw');
+const c3 = Circle.parse('{"radius": 1}');
+
+c3.radius = 10;
+
+console.log(c3.radius)
+
+
+//Inheritance - Cicle IS A shape
+
+class Shape{
+    constructor(colour){
+        this.colour = colour;
+    }
+
+    move() {
+        console.log('can be moved');
+    }
 }
 
-const c1 = new Circle(5);
-c1.draw()
 
-console.log(Object.keys(c1))   // - only return instance members
+class Circle extends Shape{  //we use the Super() method to allow paremeters or properties of the Parent Class(Shape)
+    constructor(colour, radius){    //inheriting colour parameter from the Parent class(Shape) to the child class(Circle)
+        super(colour)
+        this.radius = radius;
+    }
 
-for(let key in c1) console.log(key);  //Returns all members(instance + prototype)
+    draw() {
+        console.log('can be drawn')
+    }
 
-//stopwatch exercise Solution
+    move() {
+        super.move();       //we can re-use the move method from the Parent class this way!
+        console.log('circle can be moved!');  //overiding move method from the Parent class - Method overriding
+    }
+}
 
-//property -duration  method:// reset, start, stop
 
-function StopWatch(){  
+c_1 = new Circle('red', 4);
 
-    let startTime, endTime, running, duration = 0;
+console.log(c_1);
+c_1.move()
 
-    Object.defineProperty(this, 'duration', {
-        get: function() { return duration}
 
-        //setter
-    }) 
+//Stack Implementation
 
+const _items = new WeakMap()
+
+class Stack{
+    constructor(){
+        _items.set(this, []); 
+    }
+
+    push(obj) {
+        _items.get(this).push(obj); 
+    }
     
-    Object.defineProperty(this, 'startTime', {
-        get: function() { return this.startTime}
-    }) 
+    pop(){
+        const items = _items.get(this);
 
-    
-    Object.defineProperty(this, 'endTime', {
-        get: function() { return this.endTime}
-    }) 
+        if (items.length === 0)
+            throw new Error('Stack is empty');
 
-    
-    Object.defineProperty(this, 'running', {
-        get: function() { return this.running}
-    }) 
+        return items.pop();
+    }
+
+    peek() {
+        const items = _items.get(this);
+
+        if (items.length === 0)
+            throw new Error('Stack is empty');
+
+        return items[items.length - 1]
+    }
+
+    get count() {
+        return _items.get(this).length;
+    }
 }
-
-
-StopWatch.prototype.start = function(){
-    if (this.running)
-    throw new Error('Stopwatch has already started.');
-
-    this.running = true;
-
-    this.startTime = new Date;
-}
-
-
-StopWatch.prototype.start = function(){
-    if (!this.running)
-    throw new Error('Stopwatch has not started!');
-
-    this.running = false;
-
-    this.endTime = new Date;
-
-    const seconds = (this.endTime.getTime() - this.startTime.getTime()) / 1000;
-    this.duration += seconds; 
-}
-
-
-StopWatch.prototype.start = function(){
-    this.startTime = null;
-        this.endTime = null;
-        this.running = false;
-        this.duration = 0;   
-}
-
-
-//Prototypical Inheritance
-
-function extend(Child, Parent){
-    Child.prototype = Object.create(Parent.prototype); //Child inheriting method from Shape
-    Child.prototype.constructor = Child;
-}
-
-function Shape(color){            //Base Object
-    this.color = color;
-}
-
-Shape.prototype.duplicate = function(){
-    console.log("Shape duplicate");
-}
-
-function Circle(radius, color){
-    Shape.call(this, color);              //Calling the super constructor
-    this.radius = radius;
-}
-
-extend(Circle, Shape);
-
-Circle.prototype.draw = function(){
-    console.log('draw');
-}
-
-Circle.prototype.duplicate = function(){       //overiding method in the Parent object
-    console.log('duplicate circle now!');
-}
-
-function Square(size){
-    this.size = size;
-}
-
-extend(Square, Shape);
-
-Square.prototype.duplicate = function(){       
-    console.log('duplicate square now!');
-}
-
-let shapes = [      //Different implementation form of the duplicate method will be called-//Polymorphism
-    new Circle(8, 'blue'),     
-    new Square(4)
-]
-
-
-for (let shape of shapes)
-    shape.duplicate();
-
-
-
-
-
-
-
 

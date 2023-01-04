@@ -1,7 +1,3 @@
-// Log Module
-const log = require('./logger');
-
-log('kofi');
 
 // Path Module
 const path = require('path');
